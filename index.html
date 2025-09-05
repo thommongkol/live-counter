@@ -93,7 +93,7 @@
     presenceRef.on("value", (snapshot) => {
       const userCount = snapshot.numChildren();
       const counterElement = document.getElementById("user-count");
-      counterElement.textContent = `ออนไลน์: ${userCount}`;
+      counterElement.textContent = `ผู้เข้าชม: ${userCount} คน`;
     });
   </script>
 
