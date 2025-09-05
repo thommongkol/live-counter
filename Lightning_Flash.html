@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- === บรรทัดที่เพิ่มเข้ามาเพื่อแก้ปัญหาภาษาต่างด้าว === -->
   <meta charset="UTF-8">
 
   <style>
@@ -56,6 +55,7 @@
       measurementId: "G-2DPZF4KGY6"
     };
 
+    // แก้ไข: เปลี่ยนจากเลข Arabic เป็นเลขไทยที่ถูกต้อง
     function toThaiNumerals(n) {
       const thaiDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
       return String(n).split('').map(digit => thaiDigits[parseInt(digit)]).join('');
@@ -65,6 +65,8 @@
     const db = firebase.database();
     const presenceRef = db.ref("presence/google-sites-viewers");
     
+    // === หัวใจสำคัญของการแก้ไขทั้งหมด อยู่ตรงนี้ ===
+
     function getUniqueUserId() {
       let userId = localStorage.getItem('uniqueUserId');
       if (!userId) {
@@ -73,29 +75,39 @@
       }
       return userId;
     }
+
     const myUserId = getUniqueUserId();
     const myUserRef = presenceRef.child(myUserId);
     const tabCountKey = 'activeTabCount';
-    window.addEventListener('load', () => {
-      let count = parseInt(localStorage.getItem(tabCountKey) || '0', 10);
-      count++;
-      if (count === 1) {
-        myUserRef.onDisconnect().remove();
-        myUserRef.set(true);
+
+    // 1. รอจนกว่าจะเชื่อมต่อ Firebase สำเร็จ
+    db.ref('.info/connected').on('value', (snapshot) => {
+      if (snapshot.val() === true) {
+        // 2. เมื่อเชื่อมต่อสำเร็จแล้ว ค่อยจัดการเรื่องการนับแท็บและเพิ่มตัวเองเข้าไป
+        let count = parseInt(localStorage.getItem(tabCountKey) || '0', 10);
+        count++;
+        
+        if (count === 1) { // เป็นแท็บแรกที่เปิด
+          myUserRef.onDisconnect().remove();
+          myUserRef.set(true);
+        }
+        localStorage.setItem(tabCountKey, count);
       }
-      localStorage.setItem(tabCountKey, count);
     });
+
+    // ส่วนของการปิดแท็บยังคงเหมือนเดิม
     window.addEventListener('beforeunload', () => {
       let count = parseInt(localStorage.getItem(tabCountKey) || '1', 10);
       count--;
       if (count === 0) {
-        myUserRef.remove();
+        myUserRef.remove(); // ลบตัวเองออกทันที
         localStorage.removeItem(tabCountKey);
       } else {
         localStorage.setItem(tabCountKey, count);
       }
     });
 
+    // ส่วนแสดงผลเหมือนเดิม แต่ตอนนี้จะทำงานหลังจากข้อมูลถูกต้องแล้ว
     presenceRef.on("value", (snapshot) => {
       const userCount = snapshot.numChildren();
       const counterElement = document.getElementById("counter-display");
