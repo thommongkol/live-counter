@@ -55,7 +55,6 @@
       measurementId: "G-2DPZF4KGY6"
     };
 
-    // แก้ไข: เปลี่ยนจากเลข Arabic เป็นเลขไทยที่ถูกต้อง
     function toThaiNumerals(n) {
       const thaiDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
       return String(n).split('').map(digit => thaiDigits[parseInt(digit)]).join('');
@@ -65,7 +64,7 @@
     const db = firebase.database();
     const presenceRef = db.ref("presence/google-sites-viewers");
     
-    // === หัวใจสำคัญของการแก้ไขทั้งหมด อยู่ตรงนี้ ===
+    // === START: โค้ดที่แก้ไขใหม่ทั้งหมด ===
 
     function getUniqueUserId() {
       let userId = localStorage.getItem('uniqueUserId');
@@ -80,34 +79,42 @@
     const myUserRef = presenceRef.child(myUserId);
     const tabCountKey = 'activeTabCount';
 
-    // 1. รอจนกว่าจะเชื่อมต่อ Firebase สำเร็จ
+    // จัดการเมื่อเปิดหน้าเว็บครั้งแรก (เพื่อป้องกันการนับซ้อนตอนโหลดใหม่)
+    let isInitialLoad = true;
+    if (isInitialLoad) {
+      let count = parseInt(localStorage.getItem(tabCountKey) || '0', 10);
+      localStorage.setItem(tabCountKey, count + 1);
+      isInitialLoad = false;
+    }
+
+    // 1. ใช้ .info/connected เป็นตัวจัดการสถานะหลัก
+    // Listener นี้จะทำงานทุกครั้งที่สถานะการเชื่อมต่อเปลี่ยน (ต่อ, หลุด, ต่อใหม่)
     db.ref('.info/connected').on('value', (snapshot) => {
       if (snapshot.val() === true) {
-        // 2. เมื่อเชื่อมต่อสำเร็จแล้ว ค่อยจัดการเรื่องการนับแท็บและเพิ่มตัวเองเข้าไป
-        let count = parseInt(localStorage.getItem(tabCountKey) || '0', 10);
-        count++;
-        
-        if (count === 1) { // เป็นแท็บแรกที่เปิด
-          myUserRef.onDisconnect().remove();
-          myUserRef.set(true);
-        }
-        localStorage.setItem(tabCountKey, count);
+        // เมื่อเชื่อมต่อสำเร็จ (หรือต่อใหม่หลังหลุด)
+        // 2. ตั้งค่า onDisconnect "ใหม่ทุกครั้ง" ที่เชื่อมต่อสำเร็จ
+        myUserRef.onDisconnect().remove(); 
+        // 3. เพิ่มตัวเองเข้าไปในระบบ
+        myUserRef.set(true);
       }
     });
 
-    // ส่วนของการปิดแท็บยังคงเหมือนเดิม
+    // จัดการเมื่อปิดแท็บ (ยังคงสำคัญมาก)
     window.addEventListener('beforeunload', () => {
       let count = parseInt(localStorage.getItem(tabCountKey) || '1', 10);
       count--;
-      if (count === 0) {
-        myUserRef.remove(); // ลบตัวเองออกทันที
+      
+      if (count <= 0) {
+        // ถ้าเป็นแท็บสุดท้าย ให้ลบตัวเองออกจากระบบทันที
         localStorage.removeItem(tabCountKey);
+        localStorage.removeItem('uniqueUserId'); // ล้าง ID ไปด้วยเลยก็ได้
+        myUserRef.remove();
       } else {
         localStorage.setItem(tabCountKey, count);
       }
     });
 
-    // ส่วนแสดงผลเหมือนเดิม แต่ตอนนี้จะทำงานหลังจากข้อมูลถูกต้องแล้ว
+    // ส่วนแสดงผล ไม่ต้องเปลี่ยนแปลง
     presenceRef.on("value", (snapshot) => {
       const userCount = snapshot.numChildren();
       const counterElement = document.getElementById("counter-display");
@@ -117,6 +124,8 @@
       const thaiUserCount = toThaiNumerals(userCount);
       textElement.textContent = `ออนไลน์: ${thaiUserCount} คน`;
     });
+
+    // === END: โค้ดที่แก้ไขใหม่ทั้งหมด ===
   </script>
 </body>
 </html>
