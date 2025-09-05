@@ -2,48 +2,71 @@
 <html>
 <head>
   <style>
-    /* สไตล์ของตัวนับ */
-    body { margin: 0; font-family: system-ui, sans-serif; }
-    .counter {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #202124; /* สีพื้นหลัง */
-      color: #e8eaed;     /* สีตัวอักษร */
-      padding: 6px 12px;
-      border-radius: 99px;
+    /* 
+      CSS อัปเดตใหม่สำหรับเอฟเฟกต์แถบริบบิ้น
+    */
+    body { 
+      margin: 0; 
+      font-family: system-ui, sans-serif; 
+    }
+
+    /* 1. ตัวครอบ (Wrapper) ที่จะยึดมุมซ้ายบนไว้ */
+    .counter-wrapper {
+      position: fixed; /* ให้อยู่กับที่ ไม่เลื่อนตาม */
+      top: 0;
+      left: 0;
+      width: 160px; /* ขนาดพื้นที่ของมุม */
+      height: 160px;
+      overflow: hidden; /* ซ่อนส่วนของริบบิ้นที่ล้นออกไป */
+      z-index: 9999; /* ให้อยู่หน้าสุดเสมอ */
+      pointer-events: none; /* ทำให้คลิกทะลุส่วนที่มองไม่เห็นได้ */
+    }
+
+    /* 2. ตัวแถบริบบิ้น (Counter Ribbon) */
+    .counter-ribbon {
+      position: absolute;
+      pointer-events: auto; /* ทำให้คลิกบนตัวริบบิ้นได้ (ถ้าต้องการ) */
+      
+      /* ทำให้เป็นแถบยาวๆ */
+      width: 225px; 
+      padding: 8px 0;
+      
+      /* สีและเงา */
+      background-color: #34a853; /* สีเขียว (เปลี่ยนได้ตามชอบ) */
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+      color: #ffffff; /* สีตัวอักษร */
+      
+      /* ข้อความ */
       font-size: 14px;
-      font-weight: 500;
-      border: 1px solid #5f6368;
-    }
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      background-color: #34a853; /* สีจุดเขียว */
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-    /* อนิเมชั่นจุดกระพริบ */
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.4; }
-      100% { opacity: 1; }
+      font-weight: bold;
+      text-align: center;
+      
+      /* === หัวใจสำคัญ: การหมุนและจัดตำแหน่ง === */
+      transform: rotate(-45deg); /* หมุน 45 องศาทวนเข็มนาฬิกา */
+      left: -80px; /* ขยับไปทางซ้าย */
+      top: 35px;   /* ขยับลงมาด้านล่าง */
     }
   </style>
 </head>
 <body>
 
-  <div class="counter">
-    <div class="live-dot"></div>
-    <span id="user-count">กำลังเชื่อมต่อ...</span>
+  <!-- 
+    HTML อัปเดตใหม่สำหรับเอฟเฟกต์แถบริบบิ้น
+    เราจะใช้ div ครอบตัวนับไว้อีกชั้นหนึ่ง 
+  -->
+  <div class="counter-wrapper">
+    <div class="counter-ribbon">
+      <span id="user-count">กำลังเชื่อมต่อ...</span>
+    </div>
   </div>
 
-  <!-- 1. นำเข้า Firebase SDK -->
+
+  <!-- โค้ด Firebase และโค้ดส่วนอื่นๆ ของเว็บยังคงเหมือนเดิม -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <script>
-    // 2. การตั้งค่า Firebase ของคุณ (ใส่ให้เรียบร้อยแล้ว)
+    // การตั้งค่า Firebase ของคุณ (เหมือนเดิม)
     const firebaseConfig = {
       apiKey: "AIzaSyBQglstUR-qnDMq7CFdaC8JXYlYLe7TJqk",
       authDomain: "my-realtime-counter.firebaseapp.com",
@@ -55,31 +78,28 @@
       measurementId: "G-2DPZF4KGY6"
     };
 
-    // 3. เริ่มการเชื่อมต่อกับ Firebase
+    // เริ่มการเชื่อมต่อกับ Firebase (เหมือนเดิม)
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // 4. กำหนด "ห้อง" ที่จะใช้นับคน (ตั้งชื่ออะไรก็ได้)
+    // กำหนด "ห้อง" ที่จะใช้นับคน (เหมือนเดิม)
     const presenceRef = db.ref("presence/google-sites-viewers");
     
-    // 5. เมื่อเชื่อมต่อสำเร็จ
+    // เมื่อเชื่อมต่อสำเร็จ (เหมือนเดิม)
     db.ref(".info/connected").on("value", (snapshot) => {
       if (snapshot.val() === true) {
-        // เพิ่มตัวเองเข้าไปในห้อง
         const myConnection = presenceRef.push(true);
-        
-        // ตั้งค่าให้ Firebase ลบเราออกจากห้องโดยอัตโนมัติเมื่อปิดหน้าต่าง
         myConnection.onDisconnect().remove();
       }
     });
 
-    // 6. เฝ้าดูการเปลี่ยนแปลงในห้อง (มีคนเข้า-ออก)
+    // เฝ้าดูการเปลี่ยนแปลงในห้อง (เหมือนเดิม)
     presenceRef.on("value", (snapshot) => {
-      const userCount = snapshot.numChildren(); // นับจำนวนคนทั้งหมดในห้อง
+      const userCount = snapshot.numChildren();
       const counterElement = document.getElementById("user-count");
       
-      // อัปเดตข้อความที่แสดง
-      counterElement.textContent = `ออนไลน์: ${userCount} คน`;
+      // อัปเดตข้อความที่แสดง (เปลี่ยนข้อความเล็กน้อย)
+      counterElement.textContent = `ออนไลน์: ${userCount}`;
     });
   </script>
 
