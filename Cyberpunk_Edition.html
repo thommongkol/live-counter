@@ -2,50 +2,36 @@
 <html>
 <head>
   <style>
-    /*
-      CSS อัปเดตใหม่ทั้งหมดสำหรับธีม CYBERPUNK
-    */
     body { 
       margin: 0; 
-      /* ใช้ฟอนต์ Monospace เพื่อให้ได้ฟีลลิ่งแบบคอมพิวเตอร์ Terminal */
       font-family: 'Courier New', Courier, monospace;
-      background-color: #000; /* ทำให้พื้นหลังเป็นสีดำสนิทเพื่อขับสีนีออน */
+      /* === แก้ไขแล้ว: ทำให้พื้นหลังโปร่งใส === */
+      background-color: transparent; 
     }
 
-    /* 1. ตัวครอบหลัก (Container) */
+    /* โค้ดส่วนที่เหลือเหมือนเดิมทั้งหมด */
     .counter-cyberpunk {
       position: fixed;
       bottom: 25px;
       left: 25px;
-      
-      /* สีและเส้นขอบ */
-      background-color: rgba(10, 4, 26, 0.85); /* สีพื้นหลังโปร่งแสงเล็กน้อย */
-      color: #00f6ff; /* สีฟ้า Cyan นีออน */
+      background-color: rgba(10, 4, 26, 0.85); 
+      color: #00f6ff;
       border: 2px solid #00f6ff;
-      
-      /* เอฟเฟกต์เรืองแสง (Glow) */
       box-shadow: 0 0 5px #00f6ff, 
                   0 0 15px #00f6ff, 
                   0 0 30px #00f6ff,
                   inset 0 0 10px rgba(0, 246, 255, 0.5);
-
-      /* รูปทรงแบบมุมตัด (Clipped Corners) */
       clip-path: polygon(
         15px 0, 100% 0, 100% calc(100% - 15px), 
         calc(100% - 15px) 100%, 0 100%, 0 15px
       );
-      
       padding: 12px 24px;
       font-size: 18px;
       font-weight: bold;
-      text-transform: uppercase; /* ทำให้เป็นตัวพิมพ์ใหญ่ทั้งหมด */
-      
-      /* เอฟเฟกต์ Scanline บนพื้นหลัง */
+      text-transform: uppercase;
       background-image: repeating-linear-gradient(
         transparent 0, rgba(0, 246, 255, 0.1) 1px, transparent 2px
       );
-
-      /* อนิเมชั่นตอนเริ่มต้น */
       opacity: 0;
       transition: opacity 0.5s ease-in-out;
     }
@@ -54,15 +40,13 @@
       opacity: 1;
     }
 
-    /* 2. ส่วนของข้อความและเอฟเฟกต์ Glitch */
     #counter-text {
-      position: relative; /* สำคัญมากสำหรับ Glitch Effect */
+      position: relative;
     }
 
-    /* สร้างตัวอักษรซ้อนสำหรับ Glitch Effect */
     #counter-text::before,
     #counter-text::after {
-      content: attr(data-text); /* คัดลอกข้อความจาก attribute 'data-text' */
+      content: attr(data-text); 
       position: absolute;
       top: 0;
       left: 0;
@@ -74,93 +58,57 @@
 
     #counter-text::before {
       left: 2px;
-      text-shadow: -1px 0 #ff00ff; /* สีซ้อนเป็น Magenta */
-      /* อนิเมชั่น Glitch */
+      text-shadow: -1px 0 #ff00ff;
       animation: glitch 3s infinite linear alternate-reverse;
     }
 
     #counter-text::after {
       left: -2px;
-      text-shadow: -1px 0 #39ff14; /* สีซ้อนเป็น Green */
-      /* อนิเมชั่น Glitch (หน่วงเวลาเล็กน้อย) */
+      text-shadow: -1px 0 #39ff14;
       animation: glitch 2s infinite linear alternate-reverse;
     }
     
-    /* Keyframes สำหรับอนิเมชั่น Glitch */
     @keyframes glitch {
-      0% { clip-path: polygon(0 2%, 100% 2%, 100% 5%, 0 5%); }
-      10% { clip-path: polygon(0 40%, 100% 40%, 100% 45%, 0 45%); }
-      20% { clip-path: polygon(0 60%, 100% 60%, 100% 70%, 0 70%); }
-      30% { clip-path: polygon(0 20%, 100% 20%, 100% 22%, 0 22%); }
-      40% { clip-path: polygon(0 80%, 100% 80%, 100% 90%, 0 90%); }
-      50% { clip-path: polygon(0 50%, 100% 50%, 100% 52%, 0 52%); }
-      60% { clip-path: polygon(0 15%, 100% 15%, 100% 25%, 0 25%); }
-      70% { clip-path: polygon(0 35%, 100% 35%, 100% 40%, 0 40%); }
-      80% { clip-path: polygon(0 90%, 100% 90%, 100% 95%, 0 95%); }
-      90% { clip-path: polygon(0 55%, 100% 55%, 100% 58%, 0 58%); }
-      100% { clip-path: polygon(0 5%, 100% 5%, 100% 10%, 0 10%); }
+      0% { clip-path: polygon(0 2%, 100% 2%, 100% 5%, 0 5%); } 10% { clip-path: polygon(0 40%, 100% 40%, 100% 45%, 0 45%); } 20% { clip-path: polygon(0 60%, 100% 60%, 100% 70%, 0 70%); } 30% { clip-path: polygon(0 20%, 100% 20%, 100% 22%, 0 22%); } 40% { clip-path: polygon(0 80%, 100% 80%, 100% 90%, 0 90%); } 50% { clip-path: polygon(0 50%, 100% 50%, 100% 52%, 0 52%); } 60% { clip-path: polygon(0 15%, 100% 15%, 100% 25%, 0 25%); } 70% { clip-path: polygon(0 35%, 100% 35%, 100% 40%, 0 40%); } 80% { clip-path: polygon(0 90%, 100% 90%, 100% 95%, 0 95%); } 90% { clip-path: polygon(0 55%, 100% 55%, 100% 58%, 0 58%); } 100% { clip-path: polygon(0 5%, 100% 5%, 100% 10%, 0 10%); }
     }
-
   </style>
 </head>
 <body>
-
-  <!-- HTML ใหม่: มี span ซ้อนข้างในเพื่อทำ Glitch Effect -->
   <div id="counter-display" class="counter-cyberpunk">
     <span id="counter-text" data-text="INITIALIZING...">INITIALIZING...</span>
   </div>
 
-
-  <!-- โค้ด Firebase ไม่มีการเปลี่ยนแปลง -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBQglstUR-qnDMq7CFdaC8JXYlYLe7TJqk",
       authDomain: "my-realtime-counter.firebaseapp.com",
-      databaseURL: "https://my-realtime-counter-default-rtdb.asia-southeast1.firebased-atabase.app",
+      databaseURL: "https://my-realtime-counter-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "my-realtime-counter",
       storageBucket: "my-realtime-counter.appspot.com",
       messagingSenderId: "1064997905833",
       appId: "1:1064997905833:web:ee5063e685310ac56150b8",
       measurementId: "G-2DPZF4KGY6"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const presenceRef = db.ref("presence/google-sites-viewers");
-    
     db.ref(".info/connected").on("value", (snapshot) => {
       if (snapshot.val() === true) {
         const myConnection = presenceRef.push(true);
         myConnection.onDisconnect().remove();
       }
     });
-
     presenceRef.on("value", (snapshot) => {
       const userCount = snapshot.numChildren();
       const counterElement = document.getElementById("counter-display");
       const textElement = document.getElementById("counter-text");
-      
-      // ทำให้ตัวนับปรากฏตัวขึ้นมา
       counterElement.classList.add('visible'); 
-      
-      // สร้างข้อความใหม่
       const newText = `LIVE USERS: ${userCount}`;
-      
-      // === สำคัญ: อัปเดตทั้งข้อความและ data-text attribute ===
       textElement.textContent = newText;
-      textElement.dataset.text = newText; // อัปเดต attribute เพื่อให้ glitch effect ทำงานถูกต้อง
+      textElement.dataset.text = newText;
     });
   </script>
-
 </body>
-</html>```
-
-### การปรับแต่งเพิ่มเติม
-
-*   **เปลี่ยนสีหลัก:** หากต้องการเปลี่ยนจากสีฟ้า Cyan เป็นสีอื่น เช่น สีชมพู Magenta ให้แก้โค้ดสี `#00f6ff` ทั้งหมดใน CSS เป็น `#ff00ff`
-*   **เปลี่ยนสี Glitch:** คุณสามารถเปลี่ยนสีของ Glitch ได้ใน `text-shadow` ของ `#counter-text::before` (สี Magenta) และ `#counter-text::after` (สีเขียว)
-
-เมื่อนำโค้ดนี้ไปใช้ คุณจะได้ตัวนับผู้ใช้งานที่ไม่เหมือนใครและมีสไตล์ Cyberpunk ที่โดดเด่นแน่นอนครับ
+</html>
