@@ -2,66 +2,66 @@
 <html>
 <head>
   <style>
-    /* 
-      CSS อัปเดตใหม่สำหรับเอฟเฟกต์แถบริบบิ้น
+    /*
+      CSS อัปเดตใหม่สำหรับเอฟเฟกต์สามเหลี่ยมมุมซ้ายล่าง
     */
     body { 
       margin: 0; 
       font-family: system-ui, sans-serif; 
     }
 
-    /* 1. ตัวครอบ (Wrapper) ที่จะยึดมุมซ้ายบนไว้ */
-    .counter-wrapper {
-      position: fixed; /* ให้อยู่กับที่ ไม่เลื่อนตาม */
-      top: 0;
-      left: 0;
-      width: 160px; /* ขนาดพื้นที่ของมุม */
-      height: 160px;
-      overflow: hidden; /* ซ่อนส่วนของริบบิ้นที่ล้นออกไป */
-      z-index: 9999; /* ให้อยู่หน้าสุดเสมอ */
-      pointer-events: none; /* ทำให้คลิกทะลุส่วนที่มองไม่เห็นได้ */
+    /* 1. ตัวสามเหลี่ยม (สร้างจาก Border) */
+    .counter-triangle {
+      position: fixed; /* ยึดตำแหน่งไว้กับหน้าจอ */
+      bottom: 0;       /* ชิดขอบล่าง */
+      left: 0;         /* ชิดขอบซ้าย */
+      width: 0;        /* ไม่มีควางกว้าง */
+      height: 0;       /* ไม่มีควางสูง */
+      
+      /* === หัวใจสำคัญของการสร้างสามเหลี่ยม === */
+      /* สร้างสามเหลี่ยมมุมฉากชี้ขึ้นไปทางขวา */
+      /* โดยด้านล่างเป็นสีทึบ และด้านขวาเป็นสีใส */
+      border-bottom: 120px solid #1a73e8; /* ขนาดและความสูงของสามเหลี่ยม และสี */
+      border-right: 120px solid transparent;   /* ด้านนี้โปร่งใส เพื่อสร้างเส้นทแยง */
+
+      z-index: 999; /* กำหนดลำดับการซ้อนให้อยู่เกือบหน้าสุด */
     }
 
-    /* 2. ตัวแถบริบบิ้น (Counter Ribbon) */
-    .counter-ribbon {
-      position: absolute;
-      pointer-events: auto; /* ทำให้คลิกบนตัวริบบิ้นได้ (ถ้าต้องการ) */
+    /* 2. ข้อความตัวนับ */
+    .counter-text {
+      position: fixed; /* ยึดตำแหน่งไว้กับหน้าจอเช่นกัน */
+      z-index: 1000;   /* ต้องอยู่หน้ากว่าตัวสามเหลี่ยม */
+
+      /* จัดตำแหน่งข้อความให้อยู่กึ่งกลางบนเส้นทแยง */
+      bottom: 25px; /* ขยับขึ้นจากขอบล่าง */
+      left: 25px;   /* ขยับออกจากขอบซ้าย */
       
-      /* ทำให้เป็นแถบยาวๆ */
-      width: 225px; 
-      padding: 8px 0;
+      /* ทำให้ข้อความเอียง -45 องศาให้ขนานกับขอบสามเหลี่ยม */
+      transform: rotate(-45deg);
       
-      /* สีและเงา */
-      background-color: #34a853; /* สีเขียว (เปลี่ยนได้ตามชอบ) */
-      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-      color: #ffffff; /* สีตัวอักษร */
-      
-      /* ข้อความ */
-      font-size: 14px;
+      /* ตกแต่งข้อความ */
+      color: white;
+      font-size: 16px;
       font-weight: bold;
-      text-align: center;
-      
-      /* === หัวใจสำคัญ: การหมุนและจัดตำแหน่ง === */
-      transform: rotate(-45deg); /* หมุน 45 องศาทวนเข็มนาฬิกา */
-      left: -80px; /* ขยับไปทางซ้าย */
-      top: 35px;   /* ขยับลงมาด้านล่าง */
+      user-select: none; /* ป้องกันไม่ให้เผลอเลือกข้อความ */
     }
+
   </style>
 </head>
 <body>
 
-  <!-- 
-    HTML อัปเดตใหม่สำหรับเอฟเฟกต์แถบริบบิ้น
-    เราจะใช้ div ครอบตัวนับไว้อีกชั้นหนึ่ง 
-  -->
-  <div class="counter-wrapper">
-    <div class="counter-ribbon">
-      <span id="user-count">กำลังเชื่อมต่อ...</span>
-    </div>
+  <!-- HTML อัปเดตใหม่: แยกส่วนของรูปทรงและข้อความออกจากกัน -->
+
+  <!-- 1. Element สำหรับสร้าง "รูปทรง" สามเหลี่ยม -->
+  <div class="counter-triangle"></div>
+
+  <!-- 2. Element สำหรับแสดง "ข้อความ" ตัวนับ -->
+  <div class="counter-text">
+    <span id="user-count">กำลังเชื่อมต่อ...</span>
   </div>
 
 
-  <!-- โค้ด Firebase และโค้ดส่วนอื่นๆ ของเว็บยังคงเหมือนเดิม -->
+  <!-- โค้ด Firebase ไม่มีการเปลี่ยนแปลง -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -78,14 +78,11 @@
       measurementId: "G-2DPZF4KGY6"
     };
 
-    // เริ่มการเชื่อมต่อกับ Firebase (เหมือนเดิม)
+    // โค้ดส่วนที่เหลือทำงานเหมือนเดิมทั้งหมด
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
-    // กำหนด "ห้อง" ที่จะใช้นับคน (เหมือนเดิม)
     const presenceRef = db.ref("presence/google-sites-viewers");
     
-    // เมื่อเชื่อมต่อสำเร็จ (เหมือนเดิม)
     db.ref(".info/connected").on("value", (snapshot) => {
       if (snapshot.val() === true) {
         const myConnection = presenceRef.push(true);
@@ -93,12 +90,9 @@
       }
     });
 
-    // เฝ้าดูการเปลี่ยนแปลงในห้อง (เหมือนเดิม)
     presenceRef.on("value", (snapshot) => {
       const userCount = snapshot.numChildren();
       const counterElement = document.getElementById("user-count");
-      
-      // อัปเดตข้อความที่แสดง (เปลี่ยนข้อความเล็กน้อย)
       counterElement.textContent = `ออนไลน์: ${userCount}`;
     });
   </script>
