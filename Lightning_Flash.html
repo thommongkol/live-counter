@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    /*
+      CSS อัปเดตใหม่: ธีม CYBERPUNK LIGHTNING
+    */
+    body { 
+      margin: 0; 
+      font-family: 'Courier New', Courier, monospace;
+      background-color: transparent; /* พื้นหลังโปร่งใส */
+    }
+
+    /* 1. ตัวครอบหลัก (Container) */
+    .counter-cyberpunk {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      
+      background-color: rgba(10, 4, 26, 0.85); 
+      color: #00f6ff;
+      border: 2px solid #00f6ff;
+      
+      /* จัดเรียงไอคอนกับข้อความให้อยู่ตรงกลาง */
+      display: inline-flex;
+      align-items: center;
+      gap: 12px; /* ระยะห่างระหว่างไอคอนกับข้อความ */
+      
+      /* === อนิเมชั่นใหม่: สายฟ้าฟาด === */
+      animation: lightning-flash 5s infinite;
+
+      /* รูปทรงแบบมุมตัด (Clipped Corners) */
+      clip-path: polygon(
+        15px 0, 100% 0, 100% calc(100% - 15px), 
+        calc(100% - 15px) 100%, 0 100%, 0 15px
+      );
+      
+      padding: 12px 20px;
+      font-size: 18px;
+      font-weight: bold;
+      text-transform: uppercase;
+      
+      /* อนิเมชั่นตอนเริ่มต้น */
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out;
+    }
+    
+    .counter-cyberpunk.visible {
+      opacity: 1;
+    }
+
+    /* 2. สไตล์ของไอคอนสายฟ้า (SVG) */
+    .counter-cyberpunk svg {
+      width: 16px;
+      height: 16px;
+      fill: #00f6ff; /* สีของไอคอน */
+    }
+
+    /* 
+      3. Keyframes สำหรับอนิเมชั่นสายฟ้าฟาด
+      จะทำงานปกติเกือบตลอดเวลา แล้วสว่างวาบขึ้นมาช่วงสั้นๆ
+    */
+    @keyframes lightning-flash {
+      /* สถานะปกติ (95% ของเวลา) */
+      0%, 95% {
+        border-color: #00f6ff;
+        box-shadow: 0 0 5px #00f6ff, 0 0 10px #00f6ff;
+      }
+      /* สว่างวาบ! (ช่วงเวลาสั้นๆ) */
+      97% {
+        border-color: #ffffff;
+        color: #ffffff;
+        box-shadow: 0 0 10px #ffffff, 
+                    0 0 20px #ffffff, 
+                    0 0 40px #00f6ff,
+                    0 0 80px #00f6ff;
+      }
+      /* กลับสู่สถานะปกติ */
+      100% {
+        border-color: #00f6ff;
+        color: #00f6ff;
+        box-shadow: 0 0 5px #00f6ff, 0 0 10px #00f6ff;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- HTML ใหม่: เพิ่ม SVG ไอคอนสายฟ้าเข้ามา -->
+  <div id="counter-display" class="counter-cyberpunk">
+    <!-- ไอคอนสายฟ้า -->
+    <svg viewBox="0 0 32 32"><path d="M21.4,1.3c-0.5-0.8-1.5-1-2.3-0.5L3.8,11.3c-0.8,0.5-1,1.5-0.5,2.3L13,29.4c0.5,0.8,1.5,1,2.3,0.5l15.3-9.5c0.8-0.5,1-1.5,0.5-2.3L21.4,1.3z"/></svg>
+    <!-- ข้อความตัวนับ -->
+    <span id="counter-text">INITIALIZING...</span>
+  </div>
+
+
+  <!-- โค้ด Firebase ไม่มีการเปลี่ยนแปลง -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBQglstUR-qnDMq7CFdaC8JXYlYLe7TJqk",
+      authDomain: "my-realtime-counter.firebaseapp.com",
+      databaseURL: "https://my-realtime-counter-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "my-realtime-counter",
+      storageBucket: "my-realtime-counter.appspot.com",
+      messagingSenderId: "1064997905833",
+      appId: "1:1064997905833:web:ee5063e685310ac56150b8",
+      measurementId: "G-2DPZF4KGY6"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const presenceRef = db.ref("presence/google-sites-viewers");
+    
+    db.ref(".info/connected").on("value", (snapshot) => {
+      if (snapshot.val() === true) {
+        const myConnection = presenceRef.push(true);
+        myConnection.onDisconnect().remove();
+      }
+    });
+
+    presenceRef.on("value", (snapshot) => {
+      const userCount = snapshot.numChildren();
+      const counterElement = document.getElementById("counter-display");
+      const textElement = document.getElementById("counter-text");
+      
+      counterElement.classList.add('visible'); 
+      
+      // อัปเดตข้อความ (ง่ายกว่าเดิม)
+      textElement.textContent = `LIVE: ${userCount}`;
+    });
+  </script>
+
+</body>
+</html>
