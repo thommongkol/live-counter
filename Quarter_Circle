@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { 
+      margin: 0; 
+      font-family: system-ui, sans-serif; 
+    }
+    
+    /* สไตล์ใหม่: เสี้ยววงกลม */
+    .counter-quarter-circle {
+      position: fixed; /* ยึดตำแหน่งไว้กับหน้าจอ */
+      bottom: 0;       /* ชิดขอบล่าง */
+      left: 0;         /* ชิดขอบซ้าย */
+
+      /* ขนาด */
+      width: 150px;
+      height: 150px;
+      
+      /* สีและเงา */
+      background-color: #34a853; /* สีเขียว (เปลี่ยนได้) */
+      color: white;
+      
+      /* === หัวใจสำคัญ: ทำให้เป็นเสี้ยววงกลม === */
+      /* ทำให้มุมขวาบนโค้งมนเท่านั้น */
+      border-top-right-radius: 150px; 
+      
+      /* อนิเมชั่นเล็กน้อย */
+      transform: translate(-100%, 100%);
+      transition: transform 0.6s ease-out;
+    }
+    
+    .counter-quarter-circle.visible {
+        transform: translate(0, 0);
+    }
+    
+    /* จัดตำแหน่งข้อความ */
+    .counter-quarter-circle .text {
+        position: absolute;
+        bottom: 25px;
+        left: 25px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- HTML ใหม่สำหรับแบบเสี้ยววงกลม -->
+  <div id="counter-display" class="counter-quarter-circle">
+    <div class="text">
+        <span>กำลังเชื่อมต่อ...</span>
+    </div>
+  </div>
+
+
+  <!-- โค้ด Firebase ไม่มีการเปลี่ยนแปลง -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBQglstUR-qnDMq7CFdaC8JXYlYLe7TJqk",
+      authDomain: "my-realtime-counter.firebaseapp.com",
+      databaseURL: "https://my-realtime-counter-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "my-realtime-counter",
+      storageBucket: "my-realtime-counter.firebasestorage.app",
+      messagingSenderId: "1064997905833",
+      appId: "1:1064997905833:web:ee5063e685310ac56150b8",
+      measurementId: "G-2DPZF4KGY6"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const presenceRef = db.ref("presence/google-sites-viewers");
+    
+    db.ref(".info/connected").on("value", (snapshot) => {
+      if (snapshot.val() === true) {
+        const myConnection = presenceRef.push(true);
+        myConnection.onDisconnect().remove();
+      }
+    });
+
+    presenceRef.on("value", (snapshot) => {
+      const userCount = snapshot.numChildren();
+      const counterElement = document.getElementById("counter-display");
+      
+      counterElement.classList.add('visible'); 
+      counterElement.querySelector('.text').innerHTML = `<strong>${userCount}</strong><br>Online`;
+    });
+  </script>
+
+</body>
+</html>
