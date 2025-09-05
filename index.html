@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    /* สไตล์ของตัวนับ */
+    body { margin: 0; font-family: system-ui, sans-serif; }
+    .counter {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #202124; /* สีพื้นหลัง */
+      color: #e8eaed;     /* สีตัวอักษร */
+      padding: 6px 12px;
+      border-radius: 99px;
+      font-size: 14px;
+      font-weight: 500;
+      border: 1px solid #5f6368;
+    }
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #34a853; /* สีจุดเขียว */
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    /* อนิเมชั่นจุดกระพริบ */
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="counter">
+    <div class="live-dot"></div>
+    <span id="user-count">กำลังเชื่อมต่อ...</span>
+  </div>
+
+  <!-- 1. นำเข้า Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
+    // 2. ***** วางการตั้งค่า FIREBASE ของคุณที่นี่ *****
+    const firebaseConfig = {
+      apiKey: "AIza...",
+      authDomain: "your-project-id.firebaseapp.com",
+      // !!! สำคัญ: แก้ databaseURL ให้เป็นของคุณ !!!
+      databaseURL: "https://your-project-id-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "your-project-id",
+      storageBucket: "your-project-id.appspot.com",
+      messagingSenderId: "...",
+      appId: "..."
+    };
+    // ***********************************************
+
+    // 3. เริ่มการเชื่อมต่อกับ Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 4. กำหนด "ห้อง" ที่จะใช้นับคน (ตั้งชื่ออะไรก็ได้)
+    const presenceRef = db.ref("presence/google-sites-viewers");
+    
+    // 5. เมื่อเชื่อมต่อสำเร็จ
+    db.ref(".info/connected").on("value", (snapshot) => {
+      if (snapshot.val() === true) {
+        // เพิ่มตัวเองเข้าไปในห้อง
+        const myConnection = presenceRef.push(true);
+        
+        // ตั้งค่าให้ Firebase ลบเราออกจากห้องโดยอัตโนมัติเมื่อปิดหน้าต่าง
+        myConnection.onDisconnect().remove();
+      }
+    });
+
+    // 6. เฝ้าดูการเปลี่ยนแปลงในห้อง (มีคนเข้า-ออก)
+    presenceRef.on("value", (snapshot) => {
+      const userCount = snapshot.numChildren(); // นับจำนวนคนทั้งหมดในห้อง
+      const counterElement = document.getElementById("user-count");
+      
+      // อัปเดตข้อความที่แสดง
+      counterElement.textContent = `ออนไลน์: ${userCount} คน`;
+    });
+  </script>
+
+</body>
+</html>
