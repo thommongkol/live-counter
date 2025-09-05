@@ -43,18 +43,17 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <script>
-    // 2. ***** วางการตั้งค่า FIREBASE ของคุณที่นี่ *****
+    // 2. การตั้งค่า Firebase ของคุณ (ใส่ให้เรียบร้อยแล้ว)
     const firebaseConfig = {
-      apiKey: "AIza...",
-      authDomain: "your-project-id.firebaseapp.com",
-      // !!! สำคัญ: แก้ databaseURL ให้เป็นของคุณ !!!
-      databaseURL: "https://your-project-id-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "your-project-id",
-      storageBucket: "your-project-id.appspot.com",
-      messagingSenderId: "...",
-      appId: "..."
+      apiKey: "AIzaSyBQglstUR-qnDMq7CFdaC8JXYlYLe7TJqk",
+      authDomain: "my-realtime-counter.firebaseapp.com",
+      databaseURL: "https://my-realtime-counter-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "my-realtime-counter",
+      storageBucket: "my-realtime-counter.firebasestorage.app",
+      messagingSenderId: "1064997905833",
+      appId: "1:1064997905833:web:ee5063e685310ac56150b8",
+      measurementId: "G-2DPZF4KGY6"
     };
-    // ***********************************************
 
     // 3. เริ่มการเชื่อมต่อกับ Firebase
     firebase.initializeApp(firebaseConfig);
