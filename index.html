@@ -1,60 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- === บรรทัดที่เพิ่มเข้ามาเพื่อแก้ปัญหาภาษาต่างด้าว === -->
+  <meta charset="UTF-8">
+
   <style>
     body { 
       margin: 0; 
-      font-family: system-ui, sans-serif; 
+      font-family: 'IBM Plex Sans Thai', system-ui, sans-serif;
+      background-color: transparent;
     }
-
-    /* สไตล์ใหม่: วงกลมตัวนับ */
-    .counter-circle {
-      position: fixed; /* ยึดตำแหน่งไว้กับหน้าจอ */
-      bottom: 20px;    /* ระยะห่างจากขอบล่าง */
-      left: 20px;      /* ระยะห่างจากขอบซ้าย */
-      
-      /* ขนาดของวงกลม */
-      width: 130px;
-      height: 50px;
-      
-      /* สีและเงา */
-      background-color: #1a73e8; /* สีพื้นหลัง (เปลี่ยนได้) */
-      color: white;              /* สีตัวอักษร */
-      border-radius: 999px;        /* ทำให้ขอบโค้งมนเป็นวงรี */
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* เพิ่มเงาให้ดูมีมิติ */
-      
-      /* จัดข้อความให้อยู่กึ่งกลางเป๊ะๆ */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      
-      /* การตกแต่งตัวอักษร */
-      font-size: 16px;
+    .counter-cyberpunk {
+      position: fixed; bottom: 25px; left: 25px;
+      background-color: rgba(10, 4, 26, 0.85); 
+      color: #00f6ff;
+      border: 2px solid #00f6ff;
+      display: inline-flex; align-items: center; gap: 12px;
+      animation: lightning-flash 5s infinite;
+      clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+      padding: 12px 22px; 
+      font-size: 18px; 
       font-weight: 600;
-      
-      /* อนิเมชั่นเล็กน้อยตอนปรากฏตัว */
-      transform: translateY(20px);
-      opacity: 0;
-      transition: transform 0.5s ease, opacity 0.5s ease;
+      opacity: 0; transition: opacity 0.5s ease-in-out;
     }
-    
-    /* คลาสที่จะถูกเพิ่มเมื่อเชื่อมต่อสำเร็จ */
-    .counter-circle.visible {
-        transform: translateY(0);
-        opacity: 1;
+    .counter-cyberpunk.visible { opacity: 1; }
+    .counter-cyberpunk svg { width: 16px; height: 16px; fill: #00f6ff; }
+    @keyframes lightning-flash {
+      0%, 95% { border-color: #00f6ff; box-shadow: 0 0 5px #00f6ff, 0 0 10px #00f6ff; }
+      97% { border-color: #ffffff; color: #ffffff; box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 40px #00f6ff, 0 0 80px #00f6ff; }
+      100% { border-color: #00f6ff; color: #00f6ff; box-shadow: 0 0 5px #00f6ff, 0 0 10px #00f6ff; }
     }
-
   </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
-
-  <!-- HTML ใหม่: ใช้ div แค่อันเดียว ง่ายกว่าเดิม -->
-  <div id="counter-display" class="counter-circle">
-    <span>กำลังเชื่อมต่อ...</span>
+  <div id="counter-display" class="counter-cyberpunk">
+    <svg viewBox="0 0 32 32"><path d="M21.4,1.3c-0.5-0.8-1.5-1-2.3-0.5L3.8,11.3c-0.8,0.5-1,1.5-0.5,2.3L13,29.4c0.5,0.8,1.5,1,2.3,0.5l15.3-9.5c0.8-0.5,1-1.5,0.5-2.3L21.4,1.3z"/></svg>
+    <span id="counter-text">กำลังเชื่อมต่อ...</span>
   </div>
 
-
-  <!-- โค้ด Firebase ไม่มีการเปลี่ยนแปลง -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -64,34 +50,61 @@
       authDomain: "my-realtime-counter.firebaseapp.com",
       databaseURL: "https://my-realtime-counter-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "my-realtime-counter",
-      storageBucket: "my-realtime-counter.firebasestorage.app",
+      storageBucket: "my-realtime-counter.appspot.com",
       messagingSenderId: "1064997905833",
       appId: "1:1064997905833:web:ee5063e685310ac56150b8",
       measurementId: "G-2DPZF4KGY6"
     };
 
+    function toThaiNumerals(n) {
+      const thaiDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+      return String(n).split('').map(digit => thaiDigits[parseInt(digit)]).join('');
+    }
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const presenceRef = db.ref("presence/google-sites-viewers");
     
-    db.ref(".info/connected").on("value", (snapshot) => {
-      if (snapshot.val() === true) {
-        const myConnection = presenceRef.push(true);
-        myConnection.onDisconnect().remove();
+    function getUniqueUserId() {
+      let userId = localStorage.getItem('uniqueUserId');
+      if (!userId) {
+        userId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('uniqueUserId', userId);
+      }
+      return userId;
+    }
+    const myUserId = getUniqueUserId();
+    const myUserRef = presenceRef.child(myUserId);
+    const tabCountKey = 'activeTabCount';
+    window.addEventListener('load', () => {
+      let count = parseInt(localStorage.getItem(tabCountKey) || '0', 10);
+      count++;
+      if (count === 1) {
+        myUserRef.onDisconnect().remove();
+        myUserRef.set(true);
+      }
+      localStorage.setItem(tabCountKey, count);
+    });
+    window.addEventListener('beforeunload', () => {
+      let count = parseInt(localStorage.getItem(tabCountKey) || '1', 10);
+      count--;
+      if (count === 0) {
+        myUserRef.remove();
+        localStorage.removeItem(tabCountKey);
+      } else {
+        localStorage.setItem(tabCountKey, count);
       }
     });
 
     presenceRef.on("value", (snapshot) => {
       const userCount = snapshot.numChildren();
       const counterElement = document.getElementById("counter-display");
+      const textElement = document.getElementById("counter-text");
       
-      // ทำให้ตัวนับค่อยๆ ปรากฏตัวขึ้นมา
       counterElement.classList.add('visible'); 
-      
-      // อัปเดตข้อความ
-      counterElement.innerHTML = `<span>🟢 ออนไลน์: ${userCount}</span>`;
+      const thaiUserCount = toThaiNumerals(userCount);
+      textElement.textContent = `ออนไลน์: ${thaiUserCount} คน`;
     });
   </script>
-
 </body>
 </html>
