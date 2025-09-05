@@ -1,102 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- === บรรทัดที่เพิ่มเข้ามาเพื่อแก้ปัญหาภาษาต่างด้าว === -->
+  <meta charset="UTF-8">
+
   <style>
-    /*
-      CSS อัปเดตใหม่: ธีม CYBERPUNK LIGHTNING
-    */
     body { 
       margin: 0; 
-      font-family: 'Courier New', Courier, monospace;
-      background-color: transparent; /* พื้นหลังโปร่งใส */
+      font-family: 'IBM Plex Sans Thai', system-ui, sans-serif;
+      background-color: transparent;
     }
-
-    /* 1. ตัวครอบหลัก (Container) */
     .counter-cyberpunk {
-      position: fixed;
-      bottom: 25px;
-      left: 25px;
-      
+      position: fixed; bottom: 25px; left: 25px;
       background-color: rgba(10, 4, 26, 0.85); 
       color: #00f6ff;
       border: 2px solid #00f6ff;
-      
-      /* จัดเรียงไอคอนกับข้อความให้อยู่ตรงกลาง */
-      display: inline-flex;
-      align-items: center;
-      gap: 12px; /* ระยะห่างระหว่างไอคอนกับข้อความ */
-      
-      /* === อนิเมชั่นใหม่: สายฟ้าฟาด === */
+      display: inline-flex; align-items: center; gap: 12px;
       animation: lightning-flash 5s infinite;
-
-      /* รูปทรงแบบมุมตัด (Clipped Corners) */
-      clip-path: polygon(
-        15px 0, 100% 0, 100% calc(100% - 15px), 
-        calc(100% - 15px) 100%, 0 100%, 0 15px
-      );
-      
-      padding: 12px 20px;
-      font-size: 18px;
-      font-weight: bold;
-      text-transform: uppercase;
-      
-      /* อนิเมชั่นตอนเริ่มต้น */
-      opacity: 0;
-      transition: opacity 0.5s ease-in-out;
+      clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+      padding: 12px 22px; 
+      font-size: 18px; 
+      font-weight: 600;
+      opacity: 0; transition: opacity 0.5s ease-in-out;
     }
-    
-    .counter-cyberpunk.visible {
-      opacity: 1;
-    }
-
-    /* 2. สไตล์ของไอคอนสายฟ้า (SVG) */
-    .counter-cyberpunk svg {
-      width: 16px;
-      height: 16px;
-      fill: #00f6ff; /* สีของไอคอน */
-    }
-
-    /* 
-      3. Keyframes สำหรับอนิเมชั่นสายฟ้าฟาด
-      จะทำงานปกติเกือบตลอดเวลา แล้วสว่างวาบขึ้นมาช่วงสั้นๆ
-    */
+    .counter-cyberpunk.visible { opacity: 1; }
+    .counter-cyberpunk svg { width: 16px; height: 16px; fill: #00f6ff; }
     @keyframes lightning-flash {
-      /* สถานะปกติ (95% ของเวลา) */
-      0%, 95% {
-        border-color: #00f6ff;
-        box-shadow: 0 0 5px #00f6ff, 0 0 10px #00f6ff;
-      }
-      /* สว่างวาบ! (ช่วงเวลาสั้นๆ) */
-      97% {
-        border-color: #ffffff;
-        color: #ffffff;
-        box-shadow: 0 0 10px #ffffff, 
-                    0 0 20px #ffffff, 
-                    0 0 40px #00f6ff,
-                    0 0 80px #00f6ff;
-      }
-      /* กลับสู่สถานะปกติ */
-      100% {
-        border-color: #00f6ff;
-        color: #00f6ff;
-        box-shadow: 0 0 5px #00f6ff, 0 0 10px #00f6ff;
-      }
+      0%, 95% { border-color: #00f6ff; box-shadow: 0 0 5px #00f6ff, 0 0 10px #00f6ff; }
+      97% { border-color: #ffffff; color: #ffffff; box-shadow: 0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 40px #00f6ff, 0 0 80px #00f6ff; }
+      100% { border-color: #00f6ff; color: #00f6ff; box-shadow: 0 0 5px #00f6ff, 0 0 10px #00f6ff; }
     }
-
   </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
-
-  <!-- HTML ใหม่: เพิ่ม SVG ไอคอนสายฟ้าเข้ามา -->
   <div id="counter-display" class="counter-cyberpunk">
-    <!-- ไอคอนสายฟ้า -->
     <svg viewBox="0 0 32 32"><path d="M21.4,1.3c-0.5-0.8-1.5-1-2.3-0.5L3.8,11.3c-0.8,0.5-1,1.5-0.5,2.3L13,29.4c0.5,0.8,1.5,1,2.3,0.5l15.3-9.5c0.8-0.5,1-1.5,0.5-2.3L21.4,1.3z"/></svg>
-    <!-- ข้อความตัวนับ -->
-    <span id="counter-text">INITIALIZING...</span>
+    <span id="counter-text">กำลังเชื่อมต่อ...</span>
   </div>
 
-
-  <!-- โค้ด Firebase ไม่มีการเปลี่ยนแปลง -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -112,14 +56,43 @@
       measurementId: "G-2DPZF4KGY6"
     };
 
+    function toThaiNumerals(n) {
+      const thaiDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+      return String(n).split('').map(digit => thaiDigits[parseInt(digit)]).join('');
+    }
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const presenceRef = db.ref("presence/google-sites-viewers");
     
-    db.ref(".info/connected").on("value", (snapshot) => {
-      if (snapshot.val() === true) {
-        const myConnection = presenceRef.push(true);
-        myConnection.onDisconnect().remove();
+    function getUniqueUserId() {
+      let userId = localStorage.getItem('uniqueUserId');
+      if (!userId) {
+        userId = 'user-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('uniqueUserId', userId);
+      }
+      return userId;
+    }
+    const myUserId = getUniqueUserId();
+    const myUserRef = presenceRef.child(myUserId);
+    const tabCountKey = 'activeTabCount';
+    window.addEventListener('load', () => {
+      let count = parseInt(localStorage.getItem(tabCountKey) || '0', 10);
+      count++;
+      if (count === 1) {
+        myUserRef.onDisconnect().remove();
+        myUserRef.set(true);
+      }
+      localStorage.setItem(tabCountKey, count);
+    });
+    window.addEventListener('beforeunload', () => {
+      let count = parseInt(localStorage.getItem(tabCountKey) || '1', 10);
+      count--;
+      if (count === 0) {
+        myUserRef.remove();
+        localStorage.removeItem(tabCountKey);
+      } else {
+        localStorage.setItem(tabCountKey, count);
       }
     });
 
@@ -129,11 +102,9 @@
       const textElement = document.getElementById("counter-text");
       
       counterElement.classList.add('visible'); 
-      
-      // อัปเดตข้อความ (ง่ายกว่าเดิม)
-      textElement.textContent = `ผู้เข้าใช้: ${userCount} คน`;
+      const thaiUserCount = toThaiNumerals(userCount);
+      textElement.textContent = `ออนไลน์: ${thaiUserCount} คน`;
     });
   </script>
-
 </body>
 </html>
